@@ -50,23 +50,23 @@ with open('Border_Crossing_Entry_Data.csv',newline='') as csv_file:
         data3.append(datetime.strptime(row[1], '%m/%d/%Y %I:%M:%S %p'))
 
 
-    for key in range(len(data3)):
-        for key1 in range(len(data3)):
-            if key != key1:
-                date1 = data3[key]
-                date2 = data3[key1]
-                if date1 > date2 and data2[key][2] == data2[key1][2]:
-                    data2[key][4] += data2[key1][3] #total
-                    data2[key][5] += 1  #count
+    for i in range(len(data3)):
+        for j in range(len(data3)):
+            if i != j:
+                date1 = data3[i]
+                date2 = data3[j]
+                if date1 > date2 and data2[i][2] == data2[j][2]:
+                    data2[i][4] += data2[j][3] #total
+                    data2[i][5] += 1  #count
 
 
     final_data = []
-    for key in range(len(data2)):
-        if data2[key][5] != 0:
-            final_data.append([data2[key][0], data2[key][1], data2[key][2], data2[key][3],
-                               math.ceil(data2[key][4] / data2[key][5])])
+    for row in range(len(data2)):
+        if data2[row][5] != 0:
+            final_data.append([data2[row][0], data2[row][1], data2[row][2], data2[row][3],
+                               math.ceil(data2[row][4] / data2[row][5])])
         else:
-            final_data.append([data2[key][0], data2[key][1], data2[key][2], data2[key][3], 0])
+            final_data.append([data2[row][0], data2[row][1], data2[row][2], data2[row][3], 0])
 
 
     sorted_data = sorted(final_data, key=itemgetter(1,3,2,0),reverse=True)
