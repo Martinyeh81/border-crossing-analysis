@@ -3,7 +3,7 @@
 
 
 ## Language and Libraries Used
-I used Python3 and I used: csv, operator, itertools, math
+I used Python3 and Libraries are csv, operator, itertools, math
 
 ## Solution
 1. loading the csv file which transfer to list.
