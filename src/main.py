@@ -23,7 +23,7 @@ def outpot_csv(output_file, final_data):
             outfile_writer.writerow(row)
 
 #read.csv
-with open('sample.csv',newline='') as csv_file:
+with open('Border_Crossing_Entry_Data.csv',newline='') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     #descending the border measure date
     sorted_list = sorted(csv_reader, key=itemgetter(3, 5, 4))
