@@ -2,14 +2,12 @@ import csv
 import math
 from operator import itemgetter
 from itertools import groupby
+from datetime import datetime
 
 
-def round(number):
 
-    f = math.floor(number)
-    return f if number - f < 0.5 else f+1
 
-def outpot_csv(output_file, final_list):
+def outpot_csv(output_file, final_data):
     with open(output_file, mode='w') as csv_outfile:
         outfile_writer = csv.writer(csv_outfile, delimiter=',', quotechar='"',
                                     quoting=csv.QUOTE_NONE)
@@ -21,7 +19,7 @@ def outpot_csv(output_file, final_list):
                                     quoting=csv.QUOTE_MINIMAL)
 
         #add the list
-        for row in final_list:
+        for row in final_data:
             outfile_writer.writerow(row)
 
 #read.csv
@@ -39,37 +37,44 @@ with open('sample.csv',newline='') as csv_file:
         # sum the value
         data1.append(key + [sum(total_value)])
 
-    data2 = []
+    # remove column headers
+    del (data1[0])
+
+    #dict
+    data2 = {}
     for row in data1:
-        data2.append(row)
-
-    #remove column headers
-    del (data2[0])
-
-    data2[0] = data2 [0] + [0]
-    for i in range(len(data2)-1,0,-1):
-        if data2[i][2] != data2[i-1][2]:
-            accumulation, counter = 0, 0
-            data2[i] = data2[i] + [0]
-
-        elif data2[i][2] == data2[i-1][2] == data2[i-2][2]:
-            # Add the previous months' values
-
-            accumulation = data2[i-1][3] + data2[i-2][3]
-
-            # counter of month
-
-            counter = (int(data2[i][1][0:2])-1) + (int(data2[i][1][6:10])-int(data2[i-1][1][6:10]))*12
-
-            # average
-            data2[i] = data2[i] + [round(accumulation/counter)]
-
-        elif data2[i][2] == data2[i-1][2] != data2[i-2][2]:
-
-            data2[i] = data2[i] + [data2[i-1][3]]
+        key = row[0] + row[1] + row[2]
+        border = row[0]
+        date = row[1]
+        measure = row[2]
+        value = row[3]
+        if key not in data2:
+            data2[key] = [border, date, measure, value, 0, 0]
 
 
-    sorted_data = sorted(data2, key=itemgetter(1,3,2,0),reverse=True)
+    #datetime
+    data3 = {}
+    for row in data2:
+        data3[row] = datetime.strptime(data2[row][1], '%m/%d/%Y %I:%M:%S %p')
+
+    for key in data3:
+        for key1 in data3:
+            if key != key1:
+                date1 = data3[key]
+                date2 = data3[key1]
+                if date1 > date2 and data2[key][2] == data2[key1][2]:
+                    data2[key][4] += data2[key1][3] #total
+                    data2[key][5] += 1  #count
+    final_data = []
+    for key in data2:
+        if data2[key][5] != 0:
+            final_data.append([data2[key][0], data2[key][1], data2[key][2], data2[key][3],
+                               math.ceil(data2[key][4] / data2[key][5])])
+        else:
+            final_data.append([data2[key][0], data2[key][1], data2[key][2], data2[key][3], 0])
+
+
+    sorted_data = sorted(final_data, key=itemgetter(1,3,2,0),reverse=True)
 
 outpot_csv('report.csv', sorted_data)
 
