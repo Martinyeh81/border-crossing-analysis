@@ -4,9 +4,6 @@ from operator import itemgetter
 from itertools import groupby
 from datetime import datetime
 
-
-
-
 def outpot_csv(output_file, final_data):
     with open(output_file, mode='w') as csv_outfile:
         outfile_writer = csv.writer(csv_outfile, delimiter=',', quotechar='"',
@@ -40,33 +37,31 @@ with open('Border_Crossing_Entry_Data.csv',newline='') as csv_file:
     # remove column headers
     del (data1[0])
 
-    #dict
-    data2 = {}
+    # add average and count
+    data2 = []
     for row in data1:
-        key = row[0] + row[1] + row[2]
-        border = row[0]
-        date = row[1]
-        measure = row[2]
-        value = row[3]
-        if key not in data2:
-            data2[key] = [border, date, measure, value, 0, 0]
+        row = row + [0] + [0]
+        data2.append(row)
 
 
     #datetime
-    data3 = {}
+    data3 = []
     for row in data2:
-        data3[row] = datetime.strptime(data2[row][1], '%m/%d/%Y %I:%M:%S %p')
+        data3.append(datetime.strptime(row[1], '%m/%d/%Y %I:%M:%S %p'))
 
-    for key in data3:
-        for key1 in data3:
+
+    for key in range(len(data3)):
+        for key1 in range(len(data3)):
             if key != key1:
                 date1 = data3[key]
                 date2 = data3[key1]
                 if date1 > date2 and data2[key][2] == data2[key1][2]:
                     data2[key][4] += data2[key1][3] #total
                     data2[key][5] += 1  #count
+
+
     final_data = []
-    for key in data2:
+    for key in range(len(data2)):
         if data2[key][5] != 0:
             final_data.append([data2[key][0], data2[key][1], data2[key][2], data2[key][3],
                                math.ceil(data2[key][4] / data2[key][5])])
@@ -75,6 +70,7 @@ with open('Border_Crossing_Entry_Data.csv',newline='') as csv_file:
 
 
     sorted_data = sorted(final_data, key=itemgetter(1,3,2,0),reverse=True)
+
 
 outpot_csv('report.csv', sorted_data)
 
